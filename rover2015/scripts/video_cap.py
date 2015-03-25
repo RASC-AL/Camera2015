@@ -31,7 +31,7 @@ def checkcamList(camList):
 # see my-webcam.rules for cameras mapping
 # 0->video7, 1->video6, ...
 camList = [7,6,5,4]
-camList = [0,1,2,3]
+# camList = [0,1,2,3]
 checkcamList(camList)
 
 caps = [cv2.VideoCapture(i) for i in camList]
@@ -43,6 +43,13 @@ def callback_config(msg):
     s = str(msg.data).split(',')
     print s
     cam = int(s[0])
+    for c in caps:
+        c.release()
+    if cam < len(caps):
+        caps[cam].open(camList[cam])
+    if cam == 5:
+        caps[0].open(camList[0])
+        caps[1].open(camList[1])
  
 def talker():
 
