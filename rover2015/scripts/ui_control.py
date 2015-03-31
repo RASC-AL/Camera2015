@@ -3,7 +3,7 @@ import os
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-COMM_FILE = '/tmp/ros_comm'
+from conf import COMM_FILE
 
 class CamConfig(QDialog):
 	config = ['Camera 0', 'Camera 1', 'Camera 2', 'Camera 3', '', 'Camera 0 & 1']

@@ -5,7 +5,7 @@ import rospy
 from std_msgs.msg import String
 import os
 
-COMM_FILE = '/tmp/ros_comm'
+from conf import COMM_FILE
 
 cam = 0
 
@@ -19,11 +19,12 @@ def talker():
     print os.getcwd()
     
     while not rospy.is_shutdown():
-        with open(COMM_FILE) as f:
-            temp_cam = int(f.read())
-            if temp_cam != cam:
-                cam = temp_cam
-                pub.publish('%d,' % cam)
+        if os.path.exists(COMM_FILE):
+            with open(COMM_FILE) as f:
+                temp_cam = int(f.read())
+                if temp_cam != cam:
+                    cam = temp_cam
+                    pub.publish('%d,' % cam)
         r.sleep()
         
 if __name__ == '__main__':
