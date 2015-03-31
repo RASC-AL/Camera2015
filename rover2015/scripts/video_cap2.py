@@ -30,8 +30,10 @@ def checkcamList(camList):
             
 # see my-webcam.rules for cameras mapping
 # 0->video7, 1->video6, ...
-camList = [7,6,5,4]
+# camList = [7,6,5,4]
 # camList = [0,1,2,3]
+from conf import camList
+
 checkcamList(camList)
 
 #caps = [cv2.VideoCapture(i) for i in camList]

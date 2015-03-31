@@ -3,7 +3,7 @@ import roslib
 roslib.load_manifest('usb_cam_test')
 import sys
 import rospy
-#import cv
+import cv
 import cv2
 import numpy as np
 from std_msgs.msg import String
@@ -15,7 +15,8 @@ import os
 from subprocess import call
 import re
 
-cam_no=[7,6,5,4]
+cam_no = [7,6,5,4]
+List = [str(i) for i in cam_no]
 
 height=str(640)
 width=str(480)
