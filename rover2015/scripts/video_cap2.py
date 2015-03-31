@@ -34,23 +34,24 @@ camList = [7,6,5,4]
 # camList = [0,1,2,3]
 checkcamList(camList)
 
-caps = [cv2.VideoCapture(i) for i in camList]
+#caps = [cv2.VideoCapture(i) for i in camList]
 cam = 0
 fps = 30
+cap = cv2.VideoCapture(camList[cam])
+cap1 = cv2.VideoCapture(camList[1])
 
 def callback_config(msg):
     global cam
-    global caps
+    global cap
+    global cap1
     s = str(msg.data).split(',')
     print s
     cam = int(s[0])
-    for c in caps:
-        c.release()
-    if cam < len(caps):
-        caps[cam].open(camList[cam])
+    if cam < len(camList):
+        cap.open(camList[cam])
     if cam == 5:
-        caps[0].open(camList[0])
-        caps[1].open(camList[1])
+        cap.open(camList[0])
+        cap1.open(camList[1])
  
 def talker():
 
@@ -64,10 +65,10 @@ def talker():
     while not rospy.is_shutdown():
         try:
             if cam in range(len(camList)):
-                ret, frame = caps[cam].read()
+                ret, frame = cap.read()
             if cam == 5:
-                ret, frame = caps[0].read()
-                ret, frame1 = caps[1].read()
+                ret, frame = cap.read()
+                ret, frame1 = cap1.read()
                 if frame1 is None:
                     frame1 = frame # for debug with only one camera
                 frame = np.hstack((frame, frame1))
