@@ -24,7 +24,7 @@ def talker():
                 temp_cam = int(f.read())
                 if temp_cam != cam:
                     cam = temp_cam
-                    pub.publish('%d,' % cam)
+                    pub.publish('%d,%d,%d,%d' % (cam,15,640,480))
         r.sleep()
         
 if __name__ == '__main__':
