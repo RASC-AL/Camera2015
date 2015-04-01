@@ -6,6 +6,7 @@
 # CAM2: 0x081b 88A1FB60 Logitech, Inc. Webcam C310
 # CAM3: 0x081b C9BFC420 Logitech, Inc. Webcam C310
 
+ENV{ID_BUS}=="usb", KERNEL=="video*", ATTRS{idProduct}=="b221", SYMLINK+="video7"
 
 # symlink
 ENV{ID_BUS}=="usb", KERNEL=="video*", ATTRS{serial}=="B5713800", SYMLINK+="video7"

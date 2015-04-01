@@ -38,7 +38,7 @@ checkcamList(camList)
 
 caps = [cv2.VideoCapture(i) for i in camList]
 cam = 0
-fps = 30
+fps = 15
 
 def callback_config(msg):
     global cam
