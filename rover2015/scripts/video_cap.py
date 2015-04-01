@@ -37,25 +37,35 @@ from conf import camList
 checkcamList(camList)
 
 caps = [cv2.VideoCapture(i) for i in camList]
+prev_cam = 0
 cam = 0
 fps = 15
+r = None
 
 def callback_config(msg):
+    global prev_cam
     global cam
     global caps
+    global fps
+    global r
     s = str(msg.data).split(',')
     print s
     cam = int(s[0])
-    for c in caps:
-        c.release()
-    if cam < len(caps):
-        caps[cam].open(camList[cam])
-    if cam == 5:
-        caps[0].open(camList[0])
-        caps[1].open(camList[1])
+    fps = int(s[1])
+    if prev_cam != cam:
+        for c in caps:
+            c.release()
+        if cam < len(caps):
+            caps[cam].open(camList[cam])
+        if cam == 5:
+            caps[0].open(camList[0])
+            caps[1].open(camList[1])
+    r = rospy.Rate(fps)
+    
  
 def talker():
-
+    global r
+    
     bridge=CvBridge()
     pub = rospy.Publisher('chatter', Image, queue_size=10)
     rospy.init_node('talker', anonymous=True)

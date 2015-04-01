@@ -21,10 +21,8 @@ def talker():
     while not rospy.is_shutdown():
         if os.path.exists(COMM_FILE):
             with open(COMM_FILE) as f:
-                temp_cam = int(f.read())
-                if temp_cam != cam:
-                    cam = temp_cam
-                    pub.publish('%d,%d,%d,%d' % (cam,15,640,480))
+                conf_str = f.read()
+                pub.publish(conf_str)
         r.sleep()
         
 if __name__ == '__main__':
