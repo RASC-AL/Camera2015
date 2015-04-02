@@ -8,11 +8,12 @@ import os
 from conf import COMM_FILE
 
 cam = 0
+pub = rospy.Publisher('config', String, queue_size=1)
 
+'''
 def talker():
     global cam
     
-    pub = rospy.Publisher('config', String, queue_size=10)
     rospy.init_node('talker_config', anonymous=True)
     r = rospy.Rate(1) # 10hz
     
@@ -24,7 +25,16 @@ def talker():
                 conf_str = f.read()
                 pub.publish(conf_str)
         r.sleep()
+'''
+
+def callback(data):
+        pub.publish(data)
         
+def talker():
+        rospy.init_node("Cam_Config")
+        rospy.Subscriber('HomeCam', String, callback)
+        rospy.spin()
+
 if __name__ == '__main__':
     try:
         talker()
