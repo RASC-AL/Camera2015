@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
 #                 self.player.set_property('uri', 'file://' + filepath)
 #                 self.player.set_state(gst.STATE_PLAYING)
              cmd = """udpsrc port=1234 !  application/x-rtp, encoding-name=H264, payload=96 !  rtph264depay ! h264parse ! ffdec_h264 ! autovideosink"""
+             self.button.setText('Stop')
              self.player = self.player = gst.parse_launch(cmd)
              self.player.set_state(gst.STATE_PLAYING)
          else:
