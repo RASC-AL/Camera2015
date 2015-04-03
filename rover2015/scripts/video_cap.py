@@ -5,21 +5,11 @@ import os
 import rospy
 import numpy as np
 import cv2
+from cv2 import cv
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
-#from sensor_msgs.msg import CompressedImage
-from cv_bridge import CvBridge, CvBridgeError
+from cv_bridge import CvBridge
 import warnings
-
-# opencv2 and cv compatible
-try:
-    import cv2.cv
-    var1 = [v for v in dir(cv2.cv) if v.startswith('CV_')]
-    var2 = [v[3:] for v in var1]
-    for v1, v2 in zip(var1, var2):
-        setattr(cv2, v2, getattr(cv2.cv, v1))
-except Exception:
-    pass
 
 def checkcamList(camList):
     stream=os.popen("ls /dev/video*")
@@ -31,41 +21,33 @@ def checkcamList(camList):
 # see my-webcam.rules for cameras mapping
 # 0->video7, 1->video6, ...
 # camList = [7,6,5,4]
-# camList = [0,1,2,3]
 from conf import camList
 
 checkcamList(camList)
 
-caps = [cv2.VideoCapture(i) for i in camList]
 prev_cam = 0
 cam = 0
-fps = 15
+fps = 30
+cap = cv.CaptureFromCAM(camList[cam])
 r = None
 
 def callback_config(msg):
     global prev_cam
     global cam
-    global caps
+    global cap, cap1
     global fps
     global r
     s = str(msg.data).split(',')
-    print s
     cam = int(s[0])
     fps = int(s[1])
-    if prev_cam != cam:
-        for c in caps:
-            c.release()
-        if cam < len(caps):
-            caps[cam].open(camList[cam])
-        if cam == 5:
-            caps[0].open(camList[0])
-            caps[1].open(camList[1])
+    if cam != prev_cam and cam in range(len(camList)):
+        cap = cv.CaptureFromCAM(camList[cam])
+        prev_cam = cam
     r = rospy.Rate(fps)
-    
  
 def talker():
     global r
-    
+
     bridge=CvBridge()
     pub = rospy.Publisher('chatter', Image, queue_size=10)
     rospy.init_node('talker', anonymous=True)
@@ -76,14 +58,10 @@ def talker():
     while not rospy.is_shutdown():
         try:
             if cam in range(len(camList)):
-                ret, frame = caps[cam].read()
-            if cam == 5:
-                ret, frame = caps[0].read()
-                ret, frame1 = caps[1].read()
-                if frame1 is None:
-                    frame1 = frame # for debug with only one camera
-                frame = np.hstack((frame, frame1))
-            pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))
+                frame = cv.QueryFrame(cap)
+                if frame is not None:
+                    frame = np.asarray(frame[:,:])
+                    pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))
         except Exception:
             pass
         r.sleep()
