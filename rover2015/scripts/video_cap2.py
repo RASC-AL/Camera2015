@@ -7,19 +7,8 @@ import numpy as np
 import cv2
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
-#from sensor_msgs.msg import CompressedImage
-from cv_bridge import CvBridge, CvBridgeError
+from cv_bridge import CvBridge
 import warnings
-
-# opencv2 and cv compatible
-try:
-    import cv2.cv
-    var1 = [v for v in dir(cv2.cv) if v.startswith('CV_')]
-    var2 = [v[3:] for v in var1]
-    for v1, v2 in zip(var1, var2):
-        setattr(cv2, v2, getattr(cv2.cv, v1))
-except Exception:
-    pass
 
 def checkcamList(camList):
     stream=os.popen("ls /dev/video*")
@@ -31,31 +20,32 @@ def checkcamList(camList):
 # see my-webcam.rules for cameras mapping
 # 0->video7, 1->video6, ...
 # camList = [7,6,5,4]
-# camList = [0,1,2,3]
 from conf import camList
 
 checkcamList(camList)
 
-#caps = [cv2.VideoCapture(i) for i in camList]
+prev_cam = 0
 cam = 0
 fps = 30
 cap = cv2.VideoCapture(camList[cam])
-cap1 = cv2.VideoCapture(camList[1])
+r = None
 
 def callback_config(msg):
+    global prev_cam
     global cam
     global cap
-    global cap1
+    global fps
+    global r
     s = str(msg.data).split(',')
-    print s
     cam = int(s[0])
-    if cam < len(camList):
+    fps = int(s[1])
+    if cam != prev_cam and cam in range(len(camList)):
         cap.open(camList[cam])
-    if cam == 5:
-        cap.open(camList[0])
-        cap1.open(camList[1])
+        prev_cam = cam
+    r = rospy.Rate(fps)
  
 def talker():
+    global r
 
     bridge=CvBridge()
     pub = rospy.Publisher('chatter', Image, queue_size=10)
@@ -68,13 +58,8 @@ def talker():
         try:
             if cam in range(len(camList)):
                 ret, frame = cap.read()
-            if cam == 5:
-                ret, frame = cap.read()
-                ret, frame1 = cap1.read()
-                if frame1 is None:
-                    frame1 = frame # for debug with only one camera
-                frame = np.hstack((frame, frame1))
-            pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))
+                if frame is not None:
+                    pub.publish(bridge.cv2_to_imgmsg(frame, "bgr8"))
         except Exception:
             pass
         r.sleep()

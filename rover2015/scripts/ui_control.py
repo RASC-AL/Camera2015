@@ -35,7 +35,7 @@ class CamConfig(QDialog):
 		self.fps = int(self.configFpsEdit.text())
 		with open(COMM_FILE, 'w') as f:
 			f.write('%d,%d,%d,%d' % (self.cam, self.fps, 640, 480))
-		print self.cam
+		print '%d,%d,%d,%d' % (self.cam, self.fps, 640, 480)
 
 if __name__ == '__main__':
 
