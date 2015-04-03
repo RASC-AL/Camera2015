@@ -2,10 +2,6 @@
 
 	<node name="video_cap" pkg="rover2015" type="video_cap.py" />
 	<node name="comm" pkg="rover2015" type="comm.py" />
-	
-	<node name="image_view" pkg="image_view" type="image_view">
-		<remap from="image" to="/chatter" />
-	</node>
 	<node name="mjpeg_server" pkg="mjpeg_server" type="mjpeg_server" />
 	<node name="gstreamer" pkg="rover2015" type="gstreamer.py" />
 	
@@ -14,6 +10,5 @@
         <node name="control_node" pkg="serialpy" type="controlNode.py" />
         <node name="rover_server" pkg="rovercomm" type="testserv.py" />
         <node name="temp_node" pkg="tempnode" type="temp.py" />
-
 
 </launch>
